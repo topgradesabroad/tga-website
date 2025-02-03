@@ -1,4 +1,5 @@
 "use client";
+import { useState } from "react";
 import { FC } from "react";
 
 interface PopupFormProps {
@@ -7,11 +8,30 @@ interface PopupFormProps {
 }
 
 const PopupForm: FC<PopupFormProps> = ({ isOpen, onClose }) => {
+  const [step, setStep] = useState(1);
+  const [submitted, setSubmitted] = useState(false);
+
   if (!isOpen) return null;  // Don't render the popup if it's not open
+
+  const nextStep = () => {
+    const form = document.getElementById("popupForm") as HTMLFormElement;
+    if (form.checkValidity()) {
+      setStep(step + 1);
+    } else {
+      form.reportValidity();
+    }
+  };
+
+  const prevStep = () => setStep(step - 1);
+
+  const handleSubmit = (event: React.FormEvent) => {
+    event.preventDefault();
+    setSubmitted(true);
+  };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-      <div className="bg-white p-8 rounded-lg shadow-lg max-w-4xl w-full grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div className="relative bg-white p-8 rounded-lg shadow-lg max-w-4xl w-full h-auto md:h-auto grid grid-cols-1 md:grid-cols-[1.5fr_1fr] gap-8">
         
         {/* Close Button */}
         <button
@@ -20,110 +40,69 @@ const PopupForm: FC<PopupFormProps> = ({ isOpen, onClose }) => {
         >
           &times;
         </button>
-
-        {/* Left Column: Image */}
-        <div className="flex justify-center items-center">
-          <img
-            src="/study-abroad-image.jpg"  // Replace with the actual image path
-            alt="Study Abroad"
-            className="w-full h-auto max-h-[250px] object-cover rounded-lg shadow-md"  // Reduced height of image
-          />
+        
+        {/* Image Column */}
+        <div className="col-span-1 flex items-center justify-center">
+          <img src="study-abroad-image.jpg" alt="Description" className="w-full h-auto max-h-[70vh] object-cover rounded-lg" />
         </div>
-
-        {/* Right Column: Form Details */}
-        <div className="flex flex-col justify-center">
-          <h2 className="text-2xl font-semibold mb-4 text-center text-black">
-            Ready to Take the First Step?
-          </h2>
-          <p className="mb-6 text-center text-gray-600">
-            Fill in your details below to get personalized advice and take the first step toward studying abroad!
-          </p>
-
-          <form className="space-y-4">
-            {/* Student Name Field */}
-            <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700">Full Name</label>
-              <input
-                type="text"
-                id="name"
-                placeholder="Your Full Name"
-                className="mt-1 p-2 border border-gray-300 rounded-md w-full"
-              />
+        
+        {/* Form Content Column */}
+        <div className="col-span-1 flex flex-col items-center justify-center h-full overflow-auto">
+          {!submitted ? (
+            <form id="popupForm" className="w-full space-y-4" onSubmit={handleSubmit}>
+              <div className="text-center">
+                <h2 className="text-2xl font-bold text-black leading-tight" style={{ fontFamily: 'DM Sans' }}>Your Future Starts Here! Get Personalized Guidance for Studying Abroad</h2>
+                <p className="mt-3 text-gray-600" style={{ fontFamily: 'Poppins' }}>Fill out the form below and get a customized plan, including university options and scholarship advice.</p>
+              </div>
+              {step === 1 && (
+                <>
+                  <div>
+                    <label htmlFor="name" className="block text-sm font-medium text-gray-700">Name</label>
+                    <input type="text" id="name" required className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" />
+                  </div>
+                  <div>
+                    <label htmlFor="mobile" className="block text-sm font-medium text-gray-700">Mobile Number</label>
+                    <input type="tel" id="mobile" required pattern="^\d{10}$" className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" />
+                    <span className="text-red-500 text-sm hidden" id="mobileError">Please enter a valid 10-digit phone number.</span>
+                  </div>
+                  <div>
+                    <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>
+                    <input type="email" id="email" required className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" />
+                    <span className="text-red-500 text-sm hidden" id="emailError">Please enter a valid email address.</span>
+                  </div>
+                  <div>
+                    <button type="button" onClick={nextStep} className="w-full bg-blue-500 text-white px-4 py-2 rounded-md">Next</button>
+                  </div>
+                </>
+              )}
+              {step === 2 && (
+                <>
+                  <div>
+                    <label htmlFor="country" className="block text-sm font-medium text-gray-700">Country Preference</label>
+                    <input type="text" id="country" required className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" />
+                  </div>
+                  <div>
+                    <label htmlFor="course" className="block text-sm font-medium text-gray-700">Course Preference</label>
+                    <input type="text" id="course" required className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" />
+                  </div>
+                  <div>
+                    <label htmlFor="education" className="block text-sm font-medium text-gray-700">Education Level</label>
+                    <input type="text" id="education" required className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" />
+                  </div>
+                  <div className="flex justify-between">
+                    <button type="button" onClick={prevStep} className="bg-gray-500 text-white px-4 py-2 rounded-md">Back</button>
+                    <button type="submit" className="bg-black text-white px-4 py-2 rounded-md">Submit</button>
+                  </div>
+                </>
+              )}
+            </form>
+          ) : (
+            <div className="text-center">
+              <h2 className="text-2xl font-bold text-gray-700">Thank You!</h2>
+              <p className="text-gray-600">We have received your details and one of our counselors will contact you within 24 hours.</p>
+              <button onClick={onClose} className="mt-4 bg-blue-500 text-white px-4 py-2 rounded-md">Close</button>
             </div>
-
-            {/* Email Field */}
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email Address</label>
-              <input
-                type="email"
-                id="email"
-                placeholder="Your Email"
-                className="mt-1 p-2 border border-gray-300 rounded-md w-full"
-              />
-            </div>
-
-            {/* Phone Number Field */}
-            <div>
-              <label htmlFor="phone" className="block text-sm font-medium text-gray-700">Phone Number</label>
-              <input
-                type="tel"
-                id="phone"
-                placeholder="Your Phone Number"
-                className="mt-1 p-2 border border-gray-300 rounded-md w-full"
-              />
-            </div>
-
-            {/* Preferred Destination Field */}
-            <div>
-              <label htmlFor="destination" className="block text-sm font-medium text-gray-700">Preferred Destination</label>
-              <input
-                type="text"
-                id="destination"
-                placeholder="e.g., USA, UK, Australia"
-                className="mt-1 p-2 border border-gray-300 rounded-md w-full"
-              />
-            </div>
-
-            {/* Course Choice Field */}
-            <div>
-              <label htmlFor="course" className="block text-sm font-medium text-gray-700">Course Choice</label>
-              <input
-                type="text"
-                id="course"
-                placeholder="e.g., Data Science, Business Management"
-                className="mt-1 p-2 border border-gray-300 rounded-md w-full"
-              />
-            </div>
-
-            {/* Intake Year Field */}
-            <div>
-              <label htmlFor="intake" className="block text-sm font-medium text-gray-700">Intake Year</label>
-              <input
-                type="text"
-                id="intake"
-                placeholder="e.g., 2025, 2026"
-                className="mt-1 p-2 border border-gray-300 rounded-md w-full"
-              />
-            </div>
-
-            {/* Level of Education Field */}
-            <div>
-              <label htmlFor="educationLevel" className="block text-sm font-medium text-gray-700">Level of Education</label>
-              <input
-                type="text"
-                id="educationLevel"
-                placeholder="e.g., Bachelor's, Master's"
-                className="mt-1 p-2 border border-gray-300 rounded-md w-full"
-              />
-            </div>
-
-            <button
-              type="submit"
-              className="w-full bg-black text-white py-2 rounded-md mt-6 hover:bg-gray-900 transition"
-            >
-              Submit
-            </button>
-          </form>
+          )}
         </div>
       </div>
     </div>
@@ -131,6 +110,3 @@ const PopupForm: FC<PopupFormProps> = ({ isOpen, onClose }) => {
 };
 
 export default PopupForm;
-
-
-
