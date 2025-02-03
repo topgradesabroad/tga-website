@@ -1,3 +1,52 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* globals.css */
+body {
+  font-family: var(--font-dm-sans), sans-serif;
+}
+
+.menu-item {
+  font-family: var(--font-dm-sans);
+  color: black;
+}
+
+.menu-item:hover {
+  color: #4A4A4A; /* Gray-800 on hover */
+}
+
+/* Dropdown Layout for Courses */
+.courses-dropdown {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* Adjust as per your need */
+}
+
+.courses-dropdown ul {
+  list-style: none;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .header-button {
+    position: absolute;
+    top: 0;
+    right: 0;
+  }
+
+  .menu-items {
+    display: block; /* Ensure menu items stack vertically */
+  }
+}
+
+@media (max-width: 768px) {
+  .mobile-menu {
+    display: block; /* Make mobile menu visible */
+  }
+
+  /* Modify dropdown behavior for mobile */
+  .mobile-menu button {
+    width: 100%;
+    text-align: left;
+  }
+}
