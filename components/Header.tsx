@@ -15,8 +15,8 @@ const Header = () => {
 
   return (
     <>
-      <header className="bg-white shadow-md z-40 relative">
-        <div className="container mx-auto flex items-center justify-between px-6 py-4">
+      <header className="bg-lightgrey z-40 relative">
+        <div className="container mx-auto flex items-center justify-between px-6 pt-2">
           {/* Logo */}
           <Link href="/">
             <img src="/logo.svg" alt="Topgrades Abroad" className="h-12 w-auto" />
