@@ -6,7 +6,12 @@ module.exports = {
     './components/**/*.{js,ts,jsx,tsx}',  // Next.js components
   ],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        lightgrey:"#F8F8F6",
+      }
+
+    },
   },
   plugins: [],
 }
