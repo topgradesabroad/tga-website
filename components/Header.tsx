@@ -15,7 +15,7 @@ const Header = () => {
 
   return (
     <>
-      <header className="bg-white shadow-md z-40 relative"> {/* Added z-index and relative positioning */}
+      <header className="bg-white shadow-md z-40 relative">
         <div className="container mx-auto flex items-center justify-between px-6 py-4">
           {/* Logo */}
           <Link href="/">
@@ -87,13 +87,32 @@ const Header = () => {
             <Link href="/resources" className="hover:text-gray-800">Resources</Link>
           </nav>
 
-          {/* Start Your Journey Button */}
+          {/* Button (Visible in desktop and mobile view) */}
           <button
-            className="bg-black text-white px-4 py-2 rounded-md"
+            className="bg-black text-white px-4 py-2 rounded-md hidden md:block"
             onClick={togglePopup}
           >
             Start Your Journey
           </button>
+
+          {/* Mobile Menu Button (Hamburger Icon) */}
+          <div className="md:hidden flex items-center space-x-4">
+            {/* Button */}
+            <button
+              className="bg-black text-white px-4 py-2 rounded-md order-1"
+              onClick={togglePopup}
+            >
+              Start Your Journey
+            </button>
+
+            {/* Hamburger Icon */}
+            <button
+              className="flex items-center z-50 order-2"
+              onClick={() => setMobileMenuOpen(!isMobileMenuOpen)}
+            >
+              {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
+          </div>
         </div>
       </header>
 
@@ -101,11 +120,6 @@ const Header = () => {
       {isPopupOpen && (
         <PopupForm isOpen={isPopupOpen} onClose={togglePopup} />
       )}
-
-      {/* Mobile Menu Button */}
-      <button className="md:hidden" onClick={() => setMobileMenuOpen(!isMobileMenuOpen)}>
-        {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-      </button>
 
       {/* Mobile Menu */}
       {isMobileMenuOpen && (
@@ -115,9 +129,6 @@ const Header = () => {
           <Link href="/services" className="block py-2" onClick={() => setMobileMenuOpen(false)}>Our Expertise</Link>
           <Link href="/blog" className="block py-2" onClick={() => setMobileMenuOpen(false)}>Blog</Link>
           <Link href="/resources" className="block py-2" onClick={() => setMobileMenuOpen(false)}>Resources</Link>
-          <button className="bg-black text-white px-5 py-2 rounded-lg w-full mt-4" onClick={() => alert("Open Form Popup!")}>
-            Start Your Journey
-          </button>
         </div>
       )}
     </>
@@ -125,5 +136,18 @@ const Header = () => {
 };
 
 export default Header;
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

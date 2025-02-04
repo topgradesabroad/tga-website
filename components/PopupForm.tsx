@@ -1,108 +1,188 @@
-"use client";
-import { useState } from "react";
-import { FC } from "react";
+'use client';
+
+import { useState } from 'react';
+import Image from 'next/image';
 
 interface PopupFormProps {
-  isOpen: boolean;
   onClose: () => void;
 }
 
-const PopupForm: FC<PopupFormProps> = ({ isOpen, onClose }) => {
-  const [step, setStep] = useState(1);
-  const [submitted, setSubmitted] = useState(false);
+const PopupForm: React.FC<PopupFormProps> = ({ onClose }) => {
+  const [formData, setFormData] = useState({
+    fullName: '',
+    email: '',
+    mobile: '',
+    country: '',
+    course: '',
+    educationLevel: ''
+  });
 
-  if (!isOpen) return null;  // Don't render the popup if it's not open
+  const [errors, setErrors] = useState({
+    email: '',
+    mobile: '',
+    country: '',
+    course: '',
+    educationLevel: ''
+  });
 
-  const nextStep = () => {
-    const form = document.getElementById("popupForm") as HTMLFormElement;
-    if (form.checkValidity()) {
-      setStep(step + 1);
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    let formErrors = { ...errors };
+
+    // Validate email
+    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zAZ0-9.-]+\.[a-zAZ0-9]{2,}$/;
+    if (!emailRegex.test(formData.email)) {
+      formErrors.email = 'Please enter a valid email address.';
     } else {
-      form.reportValidity();
+      formErrors.email = '';
+    }
+
+    // Validate mobile number (10 digits)
+    const mobileRegex = /^\d{10}$/;
+    if (!mobileRegex.test(formData.mobile)) {
+      formErrors.mobile = 'Please enter a valid 10-digit mobile number.';
+    } else {
+      formErrors.mobile = '';
+    }
+
+    // Check for missing required fields
+    if (!formData.country) formErrors.country = 'Please select a country.';
+    else formErrors.country = '';
+
+    if (!formData.course) formErrors.course = 'Please select a course.';
+    else formErrors.course = '';
+
+    if (!formData.educationLevel) formErrors.educationLevel = 'Please select your education level.';
+    else formErrors.educationLevel = '';
+
+    setErrors(formErrors);
+
+    // If no errors, form is ready for submission
+    if (!Object.values(formErrors).some((err) => err)) {
+      alert('Form submitted successfully!');
+      // Handle form submission logic here
     }
   };
 
-  const prevStep = () => setStep(step - 1);
-
-  const handleSubmit = (event: React.FormEvent) => {
-    event.preventDefault();
-    setSubmitted(true);
-  };
-
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-      <div className="relative bg-white p-8 rounded-lg shadow-lg max-w-4xl w-full h-auto md:h-auto grid grid-cols-1 md:grid-cols-[1.5fr_1fr] gap-8">
-        
-        {/* Close Button */}
-        <button
-          className="absolute top-4 right-4 text-gray-600 text-2xl"
-          onClick={onClose}
-        >
-          &times;
-        </button>
-        
-        {/* Image Column */}
-        <div className="col-span-1 flex items-center justify-center">
-          <img src="study-abroad-image.jpg" alt="Description" className="w-full h-auto max-h-[70vh] object-cover rounded-lg" />
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+      <div className="bg-white rounded-2xl shadow-lg w-full md:w-[800px] max-w-[90%] md:max-w-none flex flex-col md:flex-row relative">
+        {/* Left Side - Image (optional) */}
+        <div className="w-full md:w-1/2 relative">
+          <Image
+            src="/study-abroad-image.jpg"
+            alt="Study Abroad"
+            layout="fill"
+            objectFit="cover"
+            className="rounded-l-2xl w-full h-full hidden md:block"
+          />
         </div>
-        
-        {/* Form Content Column */}
-        <div className="col-span-1 flex flex-col items-center justify-center h-full overflow-auto">
-          {!submitted ? (
-            <form id="popupForm" className="w-full space-y-4" onSubmit={handleSubmit}>
-              <div className="text-center">
-                <h2 className="text-2xl font-bold text-black leading-tight" style={{ fontFamily: 'DM Sans' }}>Your Future Starts Here! Get Personalized Guidance for Studying Abroad</h2>
-                <p className="mt-3 text-gray-600" style={{ fontFamily: 'Poppins' }}>Fill out the form below and get a customized plan, including university options and scholarship advice.</p>
-              </div>
-              {step === 1 && (
-                <>
-                  <div>
-                    <label htmlFor="name" className="block text-sm font-medium text-gray-700">Name</label>
-                    <input type="text" id="name" required className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" />
-                  </div>
-                  <div>
-                    <label htmlFor="mobile" className="block text-sm font-medium text-gray-700">Mobile Number</label>
-                    <input type="tel" id="mobile" required pattern="^\d{10}$" className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" />
-                    <span className="text-red-500 text-sm hidden" id="mobileError">Please enter a valid 10-digit phone number.</span>
-                  </div>
-                  <div>
-                    <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>
-                    <input type="email" id="email" required className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" />
-                    <span className="text-red-500 text-sm hidden" id="emailError">Please enter a valid email address.</span>
-                  </div>
-                  <div>
-                    <button type="button" onClick={nextStep} className="w-full bg-blue-500 text-white px-4 py-2 rounded-md">Next</button>
-                  </div>
-                </>
-              )}
-              {step === 2 && (
-                <>
-                  <div>
-                    <label htmlFor="country" className="block text-sm font-medium text-gray-700">Country Preference</label>
-                    <input type="text" id="country" required className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" />
-                  </div>
-                  <div>
-                    <label htmlFor="course" className="block text-sm font-medium text-gray-700">Course Preference</label>
-                    <input type="text" id="course" required className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" />
-                  </div>
-                  <div>
-                    <label htmlFor="education" className="block text-sm font-medium text-gray-700">Education Level</label>
-                    <input type="text" id="education" required className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" />
-                  </div>
-                  <div className="flex justify-between">
-                    <button type="button" onClick={prevStep} className="bg-gray-500 text-white px-4 py-2 rounded-md">Back</button>
-                    <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded-md">Submit</button>
-                  </div>
-                </>
-              )}
-            </form>
-          ) : (
-            <div className="text-center">
-              <h2 className="text-2xl font-bold text-gray-700">Thank You!</h2>
-              <p className="text-gray-600">We have received your details and one of our counselors will contact you within 24 hours.</p>
-              <button onClick={onClose} className="mt-4 bg-blue-500 text-white px-4 py-2 rounded-md">Close</button>
-            </div>
-          )}
+
+        {/* Right Side - Form */}
+        <div className="w-full p-6 flex flex-col justify-center relative md:w-1/2">
+          {/* Close Button */}
+          <button
+            className="absolute top-4 right-4 text-gray-600 hover:text-gray-900"
+            onClick={onClose}
+          >
+            ✕
+          </button>
+
+          <h2 className="text-2xl font-bold text-gray-800 mb-2">Start Your Journey</h2>
+          <p className="text-gray-600 mb-4">Fill in your details and take the first step towards studying abroad.</p>
+
+          <form className="space-y-3" onSubmit={handleSubmit}>
+            <input
+              type="text"
+              name="fullName"
+              placeholder="Full Name"
+              value={formData.fullName}
+              onChange={handleChange}
+              className="w-full p-2 border rounded-md text-sm"
+              required
+            />
+            <input
+              type="email"
+              name="email"
+              placeholder="Email"
+              value={formData.email}
+              onChange={handleChange}
+              className="w-full p-2 border rounded-md text-sm"
+              required
+            />
+            {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
+            
+            <input
+              type="tel"
+              name="mobile"
+              placeholder="Mobile Number"
+              value={formData.mobile}
+              onChange={handleChange}
+              className="w-full p-2 border rounded-md text-sm"
+              required
+            />
+            {errors.mobile && <p className="text-red-500 text-sm">{errors.mobile}</p>}
+            
+            <select
+              name="country"
+              value={formData.country}
+              onChange={handleChange}
+              className="w-full p-2 border rounded-md text-sm"
+              required
+            >
+              <option value="">Preferred Country</option>
+              <option value="USA">USA</option>
+              <option value="UK">UK</option>
+              <option value="Canada">Canada</option>
+              <option value="Australia">Australia</option>
+              <option value="New Zealand">New Zealand</option>
+              <option value="Germany">Germany</option>
+              <option value="France">France</option>
+              <option value="Ireland">Ireland</option>
+            </select>
+            {errors.country && <p className="text-red-500 text-sm">{errors.country}</p>}
+
+            <select
+              name="course"
+              value={formData.course}
+              onChange={handleChange}
+              className="w-full p-2 border rounded-md text-sm"
+              required
+            >
+              <option value="">Preferred Course</option>
+              <option value="Business & Management">Business & Management</option>
+              <option value="Computer Science">Computer Science</option>
+              <option value="Healthcare">Healthcare</option>
+              <option value="Engineering">Engineering</option>
+              <option value="Fashion & Beauty">Fashion & Beauty</option>
+            </select>
+            {errors.course && <p className="text-red-500 text-sm">{errors.course}</p>}
+
+            <select
+              name="educationLevel"
+              value={formData.educationLevel}
+              onChange={handleChange}
+              className="w-full p-2 border rounded-md text-sm"
+              required
+            >
+              <option value="">Level of Education</option>
+              <option value="Undergraduate">Undergraduate</option>
+              <option value="Postgraduate">Postgraduate</option>
+            </select>
+            {errors.educationLevel && <p className="text-red-500 text-sm">{errors.educationLevel}</p>}
+
+            <button
+              type="submit"
+              className="w-full bg-black text-white py-2 rounded-md"
+            >
+              Submit
+            </button>
+          </form>
         </div>
       </div>
     </div>
@@ -110,3 +190,11 @@ const PopupForm: FC<PopupFormProps> = ({ isOpen, onClose }) => {
 };
 
 export default PopupForm;
+
+
+
+
+
+
+
+
