@@ -16,7 +16,7 @@ const Header = () => {
   return (
     <>
       <header className="bg-lightgrey z-40 relative">
-        <div className="container mx-auto flex items-center justify-between px-6 pt-2">
+        <div className="container mx-auto flex items-center justify-between px-6 pt-4">
           {/* Logo */}
           <Link href="/">
             <img src="/logo.svg" alt="Topgrades Abroad" className="h-12 w-auto" />
@@ -89,7 +89,7 @@ const Header = () => {
 
           {/* Button (Visible in desktop and mobile view) */}
           <button
-            className="bg-black text-white px-4 py-2 rounded-md hidden md:block"
+            className="bg-black text-white px-4 py-3 rounded-md hidden md:block"
             onClick={togglePopup}
           >
             Start Your Journey

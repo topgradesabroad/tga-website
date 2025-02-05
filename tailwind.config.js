@@ -8,7 +8,7 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        lightgrey: "#F8F8F6",
+        lightgrey: "#FDFDFD",
       },
       fontFamily: {
         sans: `var(--font-dm-sans)`, // Use the CSS variable!
@@ -16,5 +16,6 @@ module.exports = {
       },
     },
   },
+  variants: {},
   plugins: [],
 }
